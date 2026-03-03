@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adnan Hashmi | Executive Producer & Content Strategist</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+        :root {
+            --accent: #D4AF37;
+            --surface: #050505;
+        }
+
+        body {
+            background-color: var(--surface);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        .serif { font-family: 'Playfair Display', serif; }
+
+        /* Advanced Background Animation */
+        .bg-gradient-mesh {
+            background: radial-gradient(circle at 50% -20%, #1a1a1a, #050505);
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Glassmorphism Refined */
+        .premium-blur {
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-action {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            transition: 0.5s;
+        }
+
+        .btn-action:hover {
+            color: #000;
+            background: var(--accent);
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+        }
+
+        input, textarea, select {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(212, 175, 55, 0.2) !important;
+            color: white !important;
+        }
+
+        input:focus { border-color: var(--accent) !important; outline: none; }
+
+        .footer-border {
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-gradient-mesh"></div>
+
+    <nav class="fixed w-full z-[100] px-10 py-6 flex justify-between items-center premium-blur border-none">
+        <div class="serif text-2xl font-bold tracking-tighter uppercase">
+            Adnan <span class="gold-gradient-text italic">Hashmi</span>
+        </div>
+        <div class="hidden lg:flex space-x-12 text-[10px] tracking-[0.4em] font-bold uppercase">
+            <a href="#home" class="hover:text-[#D4AF37] transition duration-500">Identity</a>
+            <a href="#about" class="hover:text-[#D4AF37] transition duration-500">Philosophy</a>
+            <a href="#contact" class="hover:text-[#D4AF37] transition duration-500">Collaborate</a>
+        </div>
+        <div class="flex items-center gap-6">
+            <a href="https://wa.me/918603081464" class="text-xs font-bold tracking-widest border-b border-[#D4AF37] pb-1 hover:text-[#D4AF37] transition">WHATSAPP ADVISORY</a>
+        </div>
+    </nav>
+
+    <section id="home" class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <div class="container mx-auto px-6 text-center z-10">
+            <h2 data-aos="fade-up" class="text-[10px] tracking-[0.6em] text-[#D4AF37] mb-6 uppercase font-bold">The Gold Standard in Content Creation</h2>
+            <h1 data-aos="fade-up" data-aos-delay="200" class="serif text-6xl md:text-9xl mb-8 leading-none tracking-tighter">
+                Honourable <br> <span class="italic font-normal">Perspective.</span>
+            </h1>
+            <p data-aos="fade-up" data-aos-delay="400" class="max-w-xl mx-auto text-gray-400 text-sm md:text-base leading-relaxed tracking-wide mb-12">
+                Elevating travel and lifestyle narratives through cinematic excellence. Partner with a decade of expertise in digital storytelling and audience engagement.
+            </p>
+            <div data-aos="fade-up" data-aos-delay="600">
+                <a href="#contact" class="btn-action px-12 py-5 text-xs font-black tracking-[0.3em] uppercase">Connect Digitally</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-32 premium-blur">
+        <div class="container mx-auto px-6">
+            <div class="grid lg:grid-cols-3 gap-16 items-center">
+                <div data-aos="fade-right">
+                    <h3 class="serif text-4xl mb-6 italic">Authenticity Meets <br> Luxury Production</h3>
+                    <p class="text-gray-500 text-sm leading-loose">Since 2014, Adnan Hashmi has redefined the boundaries of vlogging, transforming personal journeys into global experiences that brands trust and audiences love.</p>
+                </div>
+                <div class="lg:col-span-2 grid md:grid-cols-2 gap-8">
+                    <div class="p-10 border border-white/5 bg-white/5" data-aos="zoom-in">
+                        <span class="text-[#D4AF37] text-4xl block mb-6 font-bold tracking-tighter">01</span>
+                        <h4 class="font-bold text-xs tracking-widest uppercase mb-4">Strategic Brand Positioning</h4>
+                        <p class="text-gray-500 text-xs leading-relaxed">Integrating brand products into narratives that feel organic and high-value, ensuring maximum ROI.</p>
+                    </div>
+                    <div class="p-10 border border-white/5 bg-white/5" data-aos="zoom-in" data-aos-delay="200">
+                        <span class="text-[#D4AF37] text-4xl block mb-6 font-bold tracking-tighter">02</span>
+                        <h4 class="font-bold text-xs tracking-widest uppercase mb-4">Cinematic Storyboarding</h4>
+                        <p class="text-gray-500 text-xs leading-relaxed">Utilizing cutting-edge visual techniques to create an immersive cinematic world for your project.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-32 relative">
+        <div class="container mx-auto px-6">
+            <div class="max-w-5xl mx-auto grid lg:grid-cols-5 gap-0 shadow-2xl">
+                <div class="lg:col-span-2 bg-[#D4AF37] p-12 text-black flex flex-col justify-between" data-aos="fade-right">
+                    <div>
+                        <h2 class="serif text-4xl font-bold mb-8">Let's Craft <br> Excellence.</h2>
+                        <p class="font-bold text-xs uppercase tracking-widest mb-12 opacity-80">Official Business Inquiries Only</p>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-4">
+                            <i class="fas fa-envelope text-xl"></i>
+                            <span class="font-bold text-xs">hasdan90@gmail.com</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <i class="fab fa-whatsapp text-xl"></i>
+                            <span class="font-bold text-xs">+91 86030 81464</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-3 bg-[#0a0a0a] p-12 border border-white/5" data-aos="fade-left">
+                    <form id="contactForm" class="space-y-8">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <label class="text-[10px] uppercase tracking-widest font-bold text-gray-500 block mb-3">Professional Name</label>
+                                <input type="text" id="userName" placeholder="e.g. Alexander Pierce" class="w-full p-4 text-sm" required>
+                            </div>
+                            <div>
+                                <label class="text-[10px] uppercase tracking-widest font-bold text-gray-500 block mb-3">Email Address</label>
+                                <input type="email" id="userEmail" placeholder="name@company.com" class="w-full p-4 text-sm" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest font-bold text-gray-500 block mb-3">Nature of Inquiry</label>
+                            <select id="inquiryType" class="w-full p-4 text-sm appearance-none">
+                                <option>Commercial Partnership</option>
+                                <option>Brand Sponsorship</option>
+                                <option>Speaking Engagement</option>
+                                <option>Technical Collaboration</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest font-bold text-gray-500 block mb-3">Executive Summary</label>
+                            <textarea id="userMessage" rows="4" placeholder="Briefly describe your proposal..." class="w-full p-4 text-sm" required></textarea>
+                        </div>
+                        <button type="button" onclick="launchWhatsApp()" class="w-full btn-action py-5 text-[10px] font-black tracking-[0.4em] uppercase">
+                            Dispatch via Secure WhatsApp
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-20 footer-border text-center">
+        <div class="container mx-auto px-6">
+            <div class="serif text-3xl mb-12">Adnan <span class="gold-gradient-text italic">Hashmi</span></div>
+            <div class="flex justify-center space-x-12 mb-16 grayscale opacity-50 hover:grayscale-0 transition duration-700">
+                <a href="#"><i class="fab fa-youtube text-2xl"></i></a>
+                <a href="#"><i class="fab fa-instagram text-2xl"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in text-2xl"></i></a>
+            </div>
+            
+            <div class="text-[10px] tracking-[0.5em] text-gray-600 uppercase mb-4">
+                ©2026 Sufiyan Absar . All Rights Reserved
+            </div>
+            
+            <div class="inline-block px-10 py-4 border border-white/5 rounded-full mt-4">
+                <span class="text-[10px] tracking-[0.2em] text-gray-400">DEVELOPED BY <span class="text-white font-black">SUFIYAN ABSAR 👨‍💻</span></span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1200, once: true });
+
+        // Smooth GSAP Entrance for the Hero Text
+        gsap.from(".serif", { duration: 2, opacity: 0, y: 50, ease: "power4.out", stagger: 0.3 });
+
+        function launchWhatsApp() {
+            const name = document.getElementById('userName').value;
+            const email = document.getElementById('userEmail').value;
+            const type = document.getElementById('inquiryType').value;
+            const msg = document.getElementById('userMessage').value;
+            const whatsappNumber = "918603081464";
+
+            if (!name || !email || !msg) {
+                alert("Please complete all required fields.");
+                return;
+            }
+
+            const formattedMessage = `*OFFICIAL COLLABORATION INQUIRY*%0a`
+                + `------------------------------------%0a`
+                + `*Client:* ${name}%0a`
+                + `*Email:* ${email}%0a`
+                + `*Inquiry Type:* ${type}%0a`
+                + `*Executive Summary:*%0a${msg}%0a`
+                + `------------------------------------%0a`
+                + `_Validated through Adnan Hashmi Portal_`;
+
+            const url = `https://wa.me/${whatsappNumber}?text=${formattedMessage}`;
+            window.open(url, '_blank').focus();
+        }
+    </script>
+</body>
+  </html>
+  
