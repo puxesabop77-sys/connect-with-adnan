@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Feedback | Honourable Vlogs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --gold: #c9a84c; --gold-light: #f0d080;
+      --dark: #0a0a0f; --dark2: #12121a;
+      --white: #f5f0e8; --teal: #2dd4bf;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--dark); color:var(--white); font-family:'Nunito',sans-serif; min-height:100vh; }
+
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 48px;
+      background:rgba(10,10,15,0.95);
+      border-bottom:1px solid rgba(201,168,76,0.18);
+      position:sticky; top:0; z-index:100;
+    }
+    .nav-logo { font-family:'Cinzel Decorative',serif; font-size:1.1rem; color:var(--gold); text-decoration:none; }
+    .nav-back { color:rgba(245,240,232,0.6); text-decoration:none; font-size:0.85rem; font-weight:600; transition:color 0.3s; }
+    .nav-back:hover { color:var(--gold); }
+
+    .page-hero {
+      text-align:center; padding:70px 24px 50px;
+      background:linear-gradient(180deg, rgba(45,212,191,0.05) 0%, transparent 100%);
+    }
+    .page-tag {
+      display:inline-block; background:rgba(45,212,191,0.1); border:1px solid rgba(45,212,191,0.3);
+      color:var(--teal); padding:5px 18px; border-radius:20px;
+      font-size:0.75rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:18px;
+    }
+    .page-hero h1 { font-family:'Cinzel Decorative',serif; font-size:clamp(1.8rem,5vw,3rem); color:var(--white); margin-bottom:12px; }
+    .page-hero p { color:rgba(245,240,232,0.6); font-size:1rem; max-width:500px; margin:0 auto; line-height:1.7; }
+
+    /* Star Rating */
+    .stars-section { text-align:center; padding:0 24px 40px; }
+    .stars-label { font-size:0.85rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(245,240,232,0.5); margin-bottom:16px; }
+    .stars { display:flex; justify-content:center; gap:10px; }
+    .star { font-size:2.5rem; cursor:pointer; filter:grayscale(1); transition:filter 0.2s, transform 0.15s; user-select:none; }
+    .star.lit { filter:grayscale(0); transform:scale(1.15); }
+    .star:hover { transform:scale(1.2); }
+    .rating-text { margin-top:10px; font-size:0.9rem; color:var(--gold); font-weight:700; min-height:22px; }
+
+    .form-container { max-width:680px; margin:0 auto; padding:0 24px 80px; }
+    .form-card {
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(201,168,76,0.2);
+      border-radius:24px; padding:48px 40px;
+      position:relative; overflow:hidden;
+    }
+    .form-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:3px;
+      background:linear-gradient(90deg, transparent, var(--teal), var(--gold), var(--teal), transparent);
+    }
+
+    .form-row { margin-bottom:22px; }
+    .form-row label { display:block; font-size:0.8rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold-light); margin-bottom:8px; }
+    .form-row input, .form-row select, .form-row textarea {
+      width:100%; background:rgba(255,255,255,0.05);
+      border:1px solid rgba(201,168,76,0.2); border-radius:12px;
+      color:var(--white); font-family:'Nunito',sans-serif;
+      font-size:0.95rem; padding:14px 18px; outline:none;
+      transition:border-color 0.3s, background 0.3s; -webkit-appearance:none;
+    }
+    .form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color:var(--gold); background:rgba(201,168,76,0.06); }
+    .form-row input::placeholder, .form-row textarea::placeholder { color:rgba(245,240,232,0.25); }
+    .form-row select option { background:var(--dark2); color:var(--white); }
+    .form-row textarea { resize:vertical; min-height:120px; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+    /* Checkboxes */
+    .checkbox-group { display:flex; flex-wrap:wrap; gap:10px; margin-top:4px; }
+    .cb-item {
+      display:flex; align-items:center; gap:8px;
+      background:rgba(255,255,255,0.04); border:1px solid rgba(201,168,76,0.15);
+      padding:8px 14px; border-radius:10px; cursor:pointer; transition:all 0.2s;
+      font-size:0.85rem; color:rgba(245,240,232,0.7);
+    }
+    .cb-item input[type=checkbox] { accent-color:var(--gold); width:15px; height:15px; cursor:pointer; }
+    .cb-item:has(input:checked) { background:rgba(201,168,76,0.12); border-color:var(--gold); color:var(--gold-light); }
+
+    .submit-btn {
+      width:100%; padding:16px; border-radius:40px;
+      background:linear-gradient(135deg, var(--gold), var(--gold-light));
+      color:var(--dark); border:none; cursor:pointer;
+      font-family:'Nunito',sans-serif; font-size:1rem; font-weight:800;
+      letter-spacing:1px; transition:all 0.3s; margin-top:8px;
+    }
+    .submit-btn:hover { transform:translateY(-3px); box-shadow:0 12px 40px rgba(201,168,76,0.4); }
+    .wa-note { text-align:center; margin-top:18px; font-size:0.82rem; color:rgba(245,240,232,0.4); }
+    .wa-note span { color:var(--gold); font-weight:700; }
+
+    footer {
+      background:var(--dark); border-top:1px solid rgba(201,168,76,0.15);
+      text-align:center; padding:32px 24px;
+    }
+    .footer-copy { font-size:0.8rem; color:rgba(245,240,232,0.3); line-height:1.9; }
+    .footer-dev { color:var(--gold); font-weight:700; }
+
+    @media(max-width:600px) {
+      nav { padding:14px 20px; }
+      .form-card { padding:28px 20px; }
+      .form-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Honourable Vlogs</a>
+  <a href="index.html" class="nav-back">← Back to Home</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-tag">💭 Feedback</div>
+  <h1>Share Your Thoughts</h1>
+  <p>Your feedback helps Honourable Vlogs grow and improve. Adnan reads every message personally. Thank you for taking the time!</p>
+</div>
+
+<!-- Star Rating -->
+<div class="stars-section">
+  <div class="stars-label">Rate Your Experience</div>
+  <div class="stars" id="starRow">
+    <span class="star" onclick="rate(1)">⭐</span>
+    <span class="star" onclick="rate(2)">⭐</span>
+    <span class="star" onclick="rate(3)">⭐</span>
+    <span class="star" onclick="rate(4)">⭐</span>
+    <span class="star" onclick="rate(5)">⭐</span>
+  </div>
+  <div class="rating-text" id="ratingText"></div>
+</div>
+
+<div class="form-container">
+  <div class="form-card">
+
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Your Name</label>
+        <input type="text" id="f_name" placeholder="Optional"/>
+      </div>
+      <div class="form-row">
+        <label>WhatsApp Number</label>
+        <input type="tel" id="f_phone" placeholder="+91 XXXXX (optional)"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>Type of Feedback *</label>
+      <select id="f_type">
+        <option value="">-- Select --</option>
+        <option>General Feedback</option>
+        <option>Content Suggestion</option>
+        <option>Video Improvement</option>
+        <option>Bug / Website Issue</option>
+        <option>Appreciation / Praise</option>
+        <option>Complaint</option>
+        <option>Idea / Request</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Which Aspect Are You Reviewing?</label>
+      <div class="checkbox-group">
+        <label class="cb-item"><input type="checkbox" value="Video Content"/> 🎬 Video Content</label>
+        <label class="cb-item"><input type="checkbox" value="Presentation Style"/> 🎤 Presentation</label>
+        <label class="cb-item"><input type="checkbox" value="Video Quality"/> 📹 Video Quality</label>
+        <label class="cb-item"><input type="checkbox" value="Topics Covered"/> 📝 Topics</label>
+        <label class="cb-item"><input type="checkbox" value="Website"/> 🌐 Website</label>
+        <label class="cb-item"><input type="checkbox" value="Overall Channel"/> ⭐ Overall</label>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>Your Feedback / Message *</label>
+      <textarea id="f_msg" placeholder="Share your honest thoughts, suggestions, ideas, or anything you'd like Adnan to know..."></textarea>
+    </div>
+
+    <div class="form-row">
+      <label>Would You Recommend Honourable Vlogs?</label>
+      <select id="f_recommend">
+        <option value="">-- Select --</option>
+        <option>Yes, definitely!</option>
+        <option>Yes, probably</option>
+        <option>Maybe</option>
+        <option>Probably not</option>
+        <option>No</option>
+      </select>
+    </div>
+
+    <button class="submit-btn" onclick="sendFeedback()">
+      📲 Send Feedback on WhatsApp
+    </button>
+    <p class="wa-note">Your feedback will be sent to <span>+91 86030 81464</span> on WhatsApp.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-copy">
+    ©2026 <span class="footer-dev">Sufiyan Absar</span> . All Rights Reserved<br>
+    DEVELOPED BY <span class="footer-dev">SUFIYAN ABSAR 👨‍💻</span>
+  </div>
+</footer>
+
+<script>
+  let selectedRating = 0;
+  const ratingLabels = ['', 'Poor 😞', 'Fair 😐', 'Good 🙂', 'Great 😄', 'Excellent 🤩'];
+
+  function rate(n) {
+    selectedRating = n;
+    document.querySelectorAll('.star').forEach((s, i) => {
+      s.classList.toggle('lit', i < n);
+    });
+    document.getElementById('ratingText').textContent = ratingLabels[n];
+  }
+
+  function sendFeedback() {
+    const name      = document.getElementById('f_name').value.trim();
+    const phone     = document.getElementById('f_phone').value.trim();
+    const type      = document.getElementById('f_type').value;
+    const msg       = document.getElementById('f_msg').value.trim();
+    const recommend = document.getElementById('f_recommend').value;
+
+    if (!type || !msg) {
+      alert('Please fill in the Feedback Type and your message.');
+      return;
+    }
+
+    const aspects = [...document.querySelectorAll('.cb-item input:checked')].map(c => c.value).join(', ') || 'Not specified';
+    const stars = selectedRating ? '⭐'.repeat(selectedRating) + ` (${selectedRating}/5)` : 'Not rated';
+
+    const text =
+`💬 *NEW FEEDBACK — HONOURABLE VLOGS*
+━━━━━━━━━━━━━━━━━━━━
+⭐ *Rating:* ${stars}
+👤 *Name:* ${name || 'Anonymous'}
+📱 *WhatsApp:* ${phone || 'N/A'}
+━━━━━━━━━━━━━━━━━━━━
+📋 *Feedback Type:* ${type}
+🔍 *Aspects Reviewed:* ${aspects}
+💝 *Would Recommend:* ${recommend || 'N/A'}
+━━━━━━━━━━━━━━━━━━━━
+✍️ *Message:*
+${msg}
+━━━━━━━━━━━━━━━━━━━━
+_Sent from Honourable Vlogs Official Website_`;
+
+    const encoded = encodeURIComponent(text);
+    window.open(`https://wa.me/918603081464?text=${encoded}`, '_blank');
+  }
+</script>
+</body>
+</html>
