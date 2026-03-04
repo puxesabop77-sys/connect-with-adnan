@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — SA Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #050508;
+      --bg2: #0d0d14;
+      --bg3: #13131e;
+      --green: #00ff88;
+      --green2: #00cc6a;
+      --red: #ff3d5a;
+      --gold: #c9a84c;
+      --blue: #3d9bff;
+      --white: #e8eaf0;
+      --muted: rgba(232,234,240,0.4);
+      --border: rgba(0,255,136,0.12);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
+    body { background:var(--bg); color:var(--white); font-family:'Nunito',sans-serif; overflow:hidden; }
+
+    /* ───── LOGIN SCREEN ───── */
+    #login-screen {
+      position:fixed; inset:0; z-index:999;
+      background:var(--bg);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column;
+    }
+    .login-box {
+      width:360px;
+      background:var(--bg2);
+      border:1px solid rgba(0,255,136,0.2);
+      border-radius:20px; padding:48px 36px;
+      text-align:center; position:relative; overflow:hidden;
+    }
+    .login-box::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg, transparent, var(--green), transparent);
+    }
+    .login-icon { font-size:3rem; margin-bottom:16px; }
+    .login-box h2 {
+      font-family:'Share Tech Mono',monospace;
+      font-size:1.1rem; color:var(--green); letter-spacing:3px;
+      margin-bottom:6px;
+    }
+    .login-sub { font-size:0.78rem; color:var(--muted); letter-spacing:2px; margin-bottom:32px; }
+    .login-input {
+      width:100%; background:rgba(0,255,136,0.04);
+      border:1px solid rgba(0,255,136,0.2); border-radius:10px;
+      color:var(--white); font-family:'Share Tech Mono',monospace;
+      font-size:1rem; padding:14px 16px; outline:none;
+      text-align:center; letter-spacing:4px;
+      transition:border-color 0.3s; margin-bottom:16px;
+    }
+    .login-input:focus { border-color:var(--green); }
+    .login-input::placeholder { letter-spacing:2px; color:rgba(232,234,240,0.2); font-size:0.8rem; }
+    .login-btn {
+      width:100%; padding:14px; border-radius:10px;
+      background:linear-gradient(135deg, var(--green2), var(--green));
+      color:var(--bg); border:none; cursor:pointer;
+      font-family:'Nunito',sans-serif; font-weight:800; font-size:0.95rem;
+      letter-spacing:2px; transition:all 0.3s;
+    }
+    .login-btn:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,255,136,0.3); }
+    .login-err {
+      color:var(--red); font-size:0.8rem; margin-top:12px;
+      min-height:18px; letter-spacing:1px;
+    }
+    .login-attempts { color:var(--muted); font-size:0.75rem; margin-top:8px; }
+    .scan-line {
+      position:absolute; top:0; left:0; right:0; height:2px;
+      background:rgba(0,255,136,0.15);
+      animation:scan 3s linear infinite;
+    }
+    @keyframes scan { from{top:0} to{top:100%} }
+
+    /* ───── MAIN PANEL (hidden by default) ───── */
+    #admin-panel { display:none; height:100vh; overflow:hidden; flex-direction:column; }
+
+    /* Topbar */
+    .topbar {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 28px;
+      background:var(--bg2); border-bottom:1px solid var(--border);
+      flex-shrink:0;
+    }
+    .topbar-logo {
+      font-family:'Share Tech Mono',monospace;
+      font-size:1rem; color:var(--green); letter-spacing:3px;
+    }
+    .topbar-logo span { color:var(--muted); font-size:0.7rem; margin-left:10px; }
+    .topbar-right { display:flex; align-items:center; gap:16px; }
+    .status-dot { width:8px; height:8px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(0,255,136,0.4)} 50%{box-shadow:0 0 0 6px rgba(0,255,136,0)} }
+    .status-text { font-size:0.75rem; color:var(--green); font-family:'Share Tech Mono',monospace; }
+    .logout-btn {
+      background:rgba(255,61,90,0.1); border:1px solid rgba(255,61,90,0.3);
+      color:var(--red); padding:6px 16px; border-radius:8px; cursor:pointer;
+      font-size:0.78rem; font-weight:700; letter-spacing:1px; transition:all 0.2s;
+    }
+    .logout-btn:hover { background:rgba(255,61,90,0.2); }
+
+    /* Layout */
+    .panel-body { display:flex; flex:1; overflow:hidden; }
+
+    /* Sidebar */
+    .sidebar {
+      width:220px; background:var(--bg2);
+      border-right:1px solid var(--border);
+      padding:20px 0; flex-shrink:0; overflow-y:auto;
+    }
+    .sidebar-section { font-size:0.65rem; letter-spacing:2.5px; text-transform:uppercase; color:var(--muted); padding:0 20px; margin-bottom:8px; margin-top:16px; }
+    .sidebar-section:first-child { margin-top:0; }
+    .nav-item {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 20px; cursor:pointer; transition:all 0.2s;
+      border-left:2px solid transparent; font-size:0.88rem; color:var(--muted);
+    }
+    .nav-item:hover { background:rgba(0,255,136,0.05); color:var(--white); }
+    .nav-item.active { background:rgba(0,255,136,0.08); color:var(--green); border-left-color:var(--green); }
+    .nav-item .ni-icon { font-size:1rem; width:20px; text-align:center; }
+    .nav-badge {
+      margin-left:auto; background:var(--green); color:var(--bg);
+      font-size:0.65rem; font-weight:800; padding:2px 6px; border-radius:6px;
+    }
+
+    /* Content */
+    .content { flex:1; overflow-y:auto; padding:28px; background:var(--bg); }
+    .tab-pane { display:none; }
+    .tab-pane.active { display:block; }
+
+    /* Cards */
+    .page-title {
+      font-family:'Share Tech Mono',monospace;
+      font-size:1.1rem; color:var(--green); letter-spacing:2px;
+      margin-bottom:6px;
+    }
+    .page-sub { font-size:0.82rem; color:var(--muted); margin-bottom:28px; }
+
+    .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+    .stat-card {
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:14px; padding:22px 20px;
+      transition:border-color 0.3s;
+    }
+    .stat-card:hover { border-color:rgba(0,255,136,0.3); }
+    .stat-card .sc-label { font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+    .stat-card .sc-val { font-family:'Share Tech Mono',monospace; font-size:1.8rem; color:var(--green); }
+    .stat-card .sc-sub { font-size:0.75rem; color:var(--muted); margin-top:4px; }
+
+    .panel-card {
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:16px; padding:28px; margin-bottom:20px;
+    }
+    .panel-card h3 {
+      font-family:'Share Tech Mono',monospace;
+      font-size:0.9rem; color:var(--green); letter-spacing:2px; margin-bottom:16px;
+      padding-bottom:12px; border-bottom:1px solid var(--border);
+    }
+
+    /* Table */
+    .data-table { width:100%; border-collapse:collapse; }
+    .data-table th {
+      font-size:0.7rem; letter-spacing:2px; text-transform:uppercase;
+      color:var(--muted); padding:10px 14px; text-align:left;
+      border-bottom:1px solid var(--border);
+    }
+    .data-table td { padding:12px 14px; font-size:0.85rem; border-bottom:1px solid rgba(255,255,255,0.04); }
+    .data-table tr:hover td { background:rgba(0,255,136,0.03); }
+    .badge {
+      display:inline-block; padding:3px 10px; border-radius:6px;
+      font-size:0.72rem; font-weight:700; letter-spacing:1px;
+    }
+    .badge-green { background:rgba(0,255,136,0.12); color:var(--green); }
+    .badge-yellow { background:rgba(201,168,76,0.12); color:var(--gold); }
+    .badge-red { background:rgba(255,61,90,0.12); color:var(--red); }
+    .badge-blue { background:rgba(61,155,255,0.12); color:var(--blue); }
+
+    /* Form Controls */
+    .ctrl-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+    .ctrl-group label { display:block; font-size:0.72rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+    .ctrl-input {
+      width:100%; background:rgba(255,255,255,0.04);
+      border:1px solid var(--border); border-radius:10px;
+      color:var(--white); font-family:'Nunito',sans-serif;
+      font-size:0.9rem; padding:11px 14px; outline:none; transition:border-color 0.3s;
+    }
+    .ctrl-input:focus { border-color:var(--green); }
+    .ctrl-textarea { resize:vertical; min-height:90px; }
+    .ctrl-btn {
+      padding:10px 24px; border-radius:10px; cursor:pointer;
+      font-family:'Nunito',sans-serif; font-weight:700; font-size:0.85rem;
+      letter-spacing:1px; border:none; transition:all 0.25s; margin-right:8px;
+    }
+    .btn-green { background:rgba(0,255,136,0.15); color:var(--green); border:1px solid rgba(0,255,136,0.3); }
+    .btn-green:hover { background:rgba(0,255,136,0.25); }
+    .btn-red { background:rgba(255,61,90,0.12); color:var(--red); border:1px solid rgba(255,61,90,0.25); }
+    .btn-red:hover { background:rgba(255,61,90,0.22); }
+    .btn-blue { background:rgba(61,155,255,0.12); color:var(--blue); border:1px solid rgba(61,155,255,0.25); }
+    .btn-blue:hover { background:rgba(61,155,255,0.22); }
+    .btn-gold { background:rgba(201,168,76,0.12); color:var(--gold); border:1px solid rgba(201,168,76,0.25); }
+    .btn-gold:hover { background:rgba(201,168,76,0.22); }
+
+    /* Toggle */
+    .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+    .toggle-row:last-child { border-bottom:none; }
+    .toggle-info .ti-name { font-size:0.9rem; font-weight:600; color:var(--white); }
+    .toggle-info .ti-desc { font-size:0.75rem; color:var(--muted); margin-top:2px; }
+    .toggle {
+      position:relative; width:44px; height:24px; cursor:pointer;
+    }
+    .toggle input { opacity:0; width:0; height:0; }
+    .toggle-slider {
+      position:absolute; inset:0; background:rgba(255,255,255,0.1);
+      border-radius:24px; transition:0.3s;
+    }
+    .toggle-slider:before {
+      content:''; position:absolute;
+      width:18px; height:18px; left:3px; bottom:3px;
+      background:var(--muted); border-radius:50%; transition:0.3s;
+    }
+    .toggle input:checked + .toggle-slider { background:rgba(0,255,136,0.25); }
+    .toggle input:checked + .toggle-slider:before { transform:translateX(20px); background:var(--green); }
+
+    /* Terminal / Log */
+    .terminal {
+      background:#020205; border:1px solid var(--border);
+      border-radius:12px; padding:20px; font-family:'Share Tech Mono',monospace;
+      font-size:0.8rem; line-height:1.9; min-height:200px; max-height:280px;
+      overflow-y:auto; color:rgba(0,255,136,0.75);
+    }
+    .terminal .t-line::before { content:'> '; color:var(--green); }
+    .terminal .t-warn { color:var(--gold); }
+    .terminal .t-warn::before { content:'! '; color:var(--gold); }
+    .terminal .t-err { color:var(--red); }
+    .terminal .t-err::before { content:'✕ '; color:var(--red); }
+
+    /* Quick links */
+    .quick-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .quick-card {
+      background:rgba(255,255,255,0.03); border:1px solid var(--border);
+      border-radius:12px; padding:18px; text-align:center;
+      cursor:pointer; transition:all 0.25s; text-decoration:none;
+    }
+    .quick-card:hover { background:rgba(0,255,136,0.06); border-color:rgba(0,255,136,0.3); transform:translateY(-3px); }
+    .quick-card .qc-icon { font-size:1.8rem; margin-bottom:8px; }
+    .quick-card .qc-label { font-size:0.78rem; font-weight:700; color:var(--white); letter-spacing:1px; }
+
+    /* Notification toast */
+    #toast {
+      position:fixed; bottom:24px; right:24px; z-index:9999;
+      background:var(--bg3); border:1px solid var(--green);
+      border-radius:12px; padding:14px 20px;
+      font-size:0.85rem; color:var(--green); font-family:'Share Tech Mono',monospace;
+      letter-spacing:1px; transform:translateY(80px); opacity:0;
+      transition:all 0.3s; pointer-events:none;
+    }
+    #toast.show { transform:translateY(0); opacity:1; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width:5px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:rgba(0,255,136,0.2); border-radius:4px; }
+
+    @media(max-width:768px) {
+      .stats-row { grid-template-columns:1fr 1fr; }
+      .sidebar { width:60px; }
+      .nav-item span.ni-text, .nav-badge, .sidebar-section { display:none; }
+      .quick-grid { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ LOGIN SCREEN ══════════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="scan-line"></div>
+    <div class="login-icon">🔐</div>
+    <h2>ADMIN ACCESS</h2>
+    <div class="login-sub">HONOURABLE VLOGS — RESTRICTED</div>
+    <input class="login-input" type="password" id="pwd-input" placeholder="Enter Password" maxlength="32"
+      onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="login-btn" onclick="doLogin()">AUTHENTICATE</button>
+    <div class="login-err" id="login-err"></div>
+    <div class="login-attempts" id="login-attempts"></div>
+  </div>
+</div>
+
+<!-- ══════════════════ ADMIN PANEL ══════════════════ -->
+<div id="admin-panel">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-logo">SA://ADMIN_PANEL <span>v2.6 — HONOURABLE VLOGS</span></div>
+    <div class="topbar-right">
+      <div class="status-dot"></div>
+      <div class="status-text">SECURE SESSION</div>
+      <button class="logout-btn" onclick="doLogout()">⏻ LOGOUT</button>
+    </div>
+  </div>
+
+  <div class="panel-body">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-section">Main</div>
+      <div class="nav-item active" onclick="switchTab('dashboard',this)">
+        <span class="ni-icon">📊</span><span class="ni-text">Dashboard</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('forms',this)">
+        <span class="ni-icon">📋</span><span class="ni-text">Form Submissions</span>
+        <span class="nav-badge" id="forms-badge">3</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('pages',this)">
+        <span class="ni-icon">🌐</span><span class="ni-text">Pages</span>
+      </div>
+
+      <div class="sidebar-section">Content</div>
+      <div class="nav-item" onclick="switchTab('bio',this)">
+        <span class="ni-icon">✏️</span><span class="ni-text">Edit Bio</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('contact',this)">
+        <span class="ni-icon">📞</span><span class="ni-text">Contact Info</span>
+      </div>
+
+      <div class="sidebar-section">System</div>
+      <div class="nav-item" onclick="switchTab('settings',this)">
+        <span class="ni-icon">⚙️</span><span class="ni-text">Settings</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('logs',this)">
+        <span class="ni-icon">🖥️</span><span class="ni-text">System Log</span>
+      </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="tab-pane active" id="tab-dashboard">
+        <div class="page-title">// DASHBOARD</div>
+        <div class="page-sub">Welcome back, Sufiyan. Here's your site overview.</div>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="sc-label">Total Pages</div>
+            <div class="sc-val">4</div>
+            <div class="sc-sub">index, collab, promo, feedback</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-label">Pending Forms</div>
+            <div class="sc-val" id="pending-count" style="color:var(--gold)">3</div>
+            <div class="sc-sub">Awaiting review</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-label">Channel</div>
+            <div class="sc-val" style="font-size:1rem;line-height:1.4;color:var(--blue)">YouTube</div>
+            <div class="sc-sub">Honourable Vlogs</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-label">Website Status</div>
+            <div class="sc-val" style="font-size:1.1rem;color:var(--green)">LIVE ✓</div>
+            <div class="sc-sub">All pages active</div>
+          </div>
+        </div>
+
+        <div class="quick-grid" style="margin-bottom:20px">
+          <a href="index.html" target="_blank" class="quick-card">
+            <div class="qc-icon">🏠</div>
+            <div class="qc-label">View Home</div>
+          </a>
+          <a href="collabform.html" target="_blank" class="quick-card">
+            <div class="qc-icon">🤝</div>
+            <div class="qc-label">Collab Form</div>
+          </a>
+          <a href="proform.html" target="_blank" class="quick-card">
+            <div class="qc-icon">📣</div>
+            <div class="qc-label">Promo Form</div>
+          </a>
+          <a href="feedback.html" target="_blank" class="quick-card">
+            <div class="qc-icon">💬</div>
+            <div class="qc-label">Feedback Form</div>
+          </a>
+          <a href="https://wa.me/918603081464" target="_blank" class="quick-card">
+            <div class="qc-icon">💬</div>
+            <div class="qc-label">WhatsApp</div>
+          </a>
+          <a href="mailto:hasdan90@gmail.com" class="quick-card">
+            <div class="qc-icon">📧</div>
+            <div class="qc-label">Gmail</div>
+          </a>
+        </div>
+
+        <div class="panel-card">
+          <h3>// RECENT ACTIVITY</h3>
+          <table class="data-table">
+            <thead>
+              <tr><th>Time</th><th>Event</th><th>Source</th><th>Status</th></tr>
+            </thead>
+            <tbody id="activity-log">
+              <tr><td style="color:var(--muted);font-size:0.8rem" colspan="4">No activity recorded yet in this session.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── FORMS ── -->
+      <div class="tab-pane" id="tab-forms">
+        <div class="page-title">// FORM SUBMISSIONS</div>
+        <div class="page-sub">Track and manage incoming form requests from the website.</div>
+
+        <div class="panel-card">
+          <h3>// MOCK SUBMISSIONS (Demo Data)</h3>
+          <table class="data-table">
+            <thead>
+              <tr><th>#</th><th>Name</th><th>Type</th><th>Phone</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="color:var(--muted)">001</td>
+                <td>Rahul Sharma</td>
+                <td><span class="badge badge-blue">Collab</span></td>
+                <td>+91 99XXXXXXXX</td>
+                <td><span class="badge badge-yellow">Pending</span></td>
+                <td>
+                  <button class="ctrl-btn btn-green" style="padding:5px 12px;font-size:0.75rem;" onclick="markDone(this)">✓ Done</button>
+                  <button class="ctrl-btn btn-red" style="padding:5px 12px;font-size:0.75rem;" onclick="deleteRow(this)">✕</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="color:var(--muted)">002</td>
+                <td>Priya Mehta</td>
+                <td><span class="badge badge-gold">Promo</span></td>
+                <td>+91 88XXXXXXXX</td>
+                <td><span class="badge badge-yellow">Pending</span></td>
+                <td>
+                  <button class="ctrl-btn btn-green" style="padding:5px 12px;font-size:0.75rem;" onclick="markDone(this)">✓ Done</button>
+                  <button class="ctrl-btn btn-red" style="padding:5px 12px;font-size:0.75rem;" onclick="deleteRow(this)">✕</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="color:var(--muted)">003</td>
+                <td>Anonymous</td>
+                <td><span class="badge badge-green">Feedback</span></td>
+                <td>N/A</td>
+                <td><span class="badge badge-yellow">Pending</span></td>
+                <td>
+                  <button class="ctrl-btn btn-green" style="padding:5px 12px;font-size:0.75rem;" onclick="markDone(this)">✓ Done</button>
+                  <button class="ctrl-btn btn-red" style="padding:5px 12px;font-size:0.75rem;" onclick="deleteRow(this)">✕</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="panel-card">
+          <h3>// QUICK WHATSAPP OPEN</h3>
+          <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;">All forms send directly to WhatsApp. Open your chats to review incoming messages.</p>
+          <a href="https://wa.me/918603081464" target="_blank">
+            <button class="ctrl-btn btn-green">💬 Open WhatsApp Chat</button>
+          </a>
+          <a href="mailto:hasdan90@gmail.com">
+            <button class="ctrl-btn btn-blue">📧 Open Gmail</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- ── PAGES ── -->
+      <div class="tab-pane" id="tab-pages">
+        <div class="page-title">// PAGES MANAGER</div>
+        <div class="page-sub">All pages of the Honourable Vlogs website.</div>
+
+        <div class="panel-card">
+          <h3>// PAGE OVERVIEW</h3>
+          <table class="data-table">
+            <thead>
+              <tr><th>File</th><th>Page Name</th><th>Purpose</th><th>Status</th><th>Open</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:var(--green)">index.html</td>
+                <td>Home / Profile</td>
+                <td>Main superprofile page</td>
+                <td><span class="badge badge-green">LIVE</span></td>
+                <td><a href="index.html" target="_blank"><button class="ctrl-btn btn-blue" style="padding:5px 14px;font-size:0.75rem;">Open ↗</button></a></td>
+              </tr>
+              <tr>
+                <td style="font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:var(--green)">collabform.html</td>
+                <td>Collaboration Form</td>
+                <td>Collab requests via WhatsApp</td>
+                <td><span class="badge badge-green">LIVE</span></td>
+                <td><a href="collabform.html" target="_blank"><button class="ctrl-btn btn-blue" style="padding:5px 14px;font-size:0.75rem;">Open ↗</button></a></td>
+              </tr>
+              <tr>
+                <td style="font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:var(--green)">proform.html</td>
+                <td>Promotion Form</td>
+                <td>Brand promotion enquiries</td>
+                <td><span class="badge badge-green">LIVE</span></td>
+                <td><a href="proform.html" target="_blank"><button class="ctrl-btn btn-blue" style="padding:5px 14px;font-size:0.75rem;">Open ↗</button></a></td>
+              </tr>
+              <tr>
+                <td style="font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:var(--green)">feedback.html</td>
+                <td>Feedback Page</td>
+                <td>Viewer feedback & ratings</td>
+                <td><span class="badge badge-green">LIVE</span></td>
+                <td><a href="feedback.html" target="_blank"><button class="ctrl-btn btn-blue" style="padding:5px 14px;font-size:0.75rem;">Open ↗</button></a></td>
+              </tr>
+              <tr>
+                <td style="font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:var(--red)">sufiyan.html</td>
+                <td>Admin Panel</td>
+                <td>Hidden admin dashboard</td>
+                <td><span class="badge badge-red">HIDDEN</span></td>
+                <td><span style="color:var(--muted);font-size:0.78rem;">You are here</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── BIO EDITOR ── -->
+      <div class="tab-pane" id="tab-bio">
+        <div class="page-title">// EDIT BIO</div>
+        <div class="page-sub">Update profile text for Adnan Hashmi / Honourable Vlogs.</div>
+
+        <div class="panel-card">
+          <h3>// PROFILE DETAILS</h3>
+          <div class="ctrl-row">
+            <div class="ctrl-group">
+              <label>Creator Name</label>
+              <input class="ctrl-input" id="bio_name" value="Adnan Hashmi"/>
+            </div>
+            <div class="ctrl-group">
+              <label>Channel Name</label>
+              <input class="ctrl-input" id="bio_channel" value="Honourable Vlogs"/>
+            </div>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-group">
+              <label>Location</label>
+              <input class="ctrl-input" id="bio_location" value="India"/>
+            </div>
+            <div class="ctrl-group">
+              <label>Platform</label>
+              <input class="ctrl-input" id="bio_platform" value="YouTube"/>
+            </div>
+          </div>
+          <div class="ctrl-group" style="margin-bottom:16px">
+            <label>Hero Description</label>
+            <textarea class="ctrl-input ctrl-textarea" id="bio_desc">Welcome to the official profile of Adnan Hashmi — creator of Honourable Vlogs. Bringing you authentic stories, real vlogs, and genuine conversations that matter.</textarea>
+          </div>
+          <button class="ctrl-btn btn-green" onclick="saveBio()">💾 Save Changes</button>
+          <button class="ctrl-btn btn-gold" onclick="copyBio()">📋 Copy Bio</button>
+        </div>
+      </div>
+
+      <!-- ── CONTACT INFO ── -->
+      <div class="tab-pane" id="tab-contact">
+        <div class="page-title">// CONTACT INFO</div>
+        <div class="page-sub">Manage contact details used across the website.</div>
+
+        <div class="panel-card">
+          <h3>// CURRENT DETAILS</h3>
+          <div class="ctrl-row">
+            <div class="ctrl-group">
+              <label>WhatsApp Number</label>
+              <input class="ctrl-input" value="+918603081464"/>
+            </div>
+            <div class="ctrl-group">
+              <label>Gmail Address</label>
+              <input class="ctrl-input" value="hasdan90@gmail.com"/>
+            </div>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-group">
+              <label>YouTube Channel URL</label>
+              <input class="ctrl-input" value="https://www.youtube.com/@HonourableVlogs"/>
+            </div>
+            <div class="ctrl-group">
+              <label>Developer Credit</label>
+              <input class="ctrl-input" value="Sufiyan Absar"/>
+            </div>
+          </div>
+          <button class="ctrl-btn btn-green" onclick="showToast('✓ Contact info noted (edit HTML to apply changes)')">💾 Save</button>
+          <button class="ctrl-btn btn-blue" onclick="window.open('https://wa.me/918603081464','_blank')">💬 Test WhatsApp</button>
+          <button class="ctrl-btn btn-gold" onclick="window.open('mailto:hasdan90@gmail.com')">📧 Test Email</button>
+        </div>
+      </div>
+
+      <!-- ── SETTINGS ── -->
+      <div class="tab-pane" id="tab-settings">
+        <div class="page-title">// SETTINGS</div>
+        <div class="page-sub">Configure website preferences and toggles.</div>
+
+        <div class="panel-card">
+          <h3>// FEATURE TOGGLES</h3>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="ti-name">Starfield Animation</div>
+              <div class="ti-desc">Background star animation on home page</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="ti-name">Collaboration Form</div>
+              <div class="ti-desc">Accept new collaboration requests</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="ti-name">Promotion Form</div>
+              <div class="ti-desc">Accept brand promotion enquiries</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="ti-name">Feedback Form</div>
+              <div class="ti-desc">Allow viewers to submit feedback</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="ti-name">WhatsApp Redirect</div>
+              <div class="ti-desc">All forms open WhatsApp on submit</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <h3>// ADMIN SECURITY</h3>
+          <div class="ctrl-row">
+            <div class="ctrl-group">
+              <label>Current Password</label>
+              <input class="ctrl-input" type="password" placeholder="••••••••"/>
+            </div>
+            <div class="ctrl-group">
+              <label>New Password</label>
+              <input class="ctrl-input" type="password" id="new_pwd" placeholder="Enter new password"/>
+            </div>
+          </div>
+          <button class="ctrl-btn btn-red" onclick="changePwd()">🔐 Update Password</button>
+        </div>
+      </div>
+
+      <!-- ── LOGS ── -->
+      <div class="tab-pane" id="tab-logs">
+        <div class="page-title">// SYSTEM LOG</div>
+        <div class="page-sub">Live activity and session log for this admin panel.</div>
+
+        <div class="panel-card">
+          <h3>// TERMINAL OUTPUT</h3>
+          <div class="terminal" id="terminal-log">
+            <div class="t-line">SYSTEM BOOT — SA Admin Panel v2.6</div>
+            <div class="t-line">Authenticating user... SUCCESS</div>
+            <div class="t-line">Session started</div>
+            <div class="t-line">Loading modules: dashboard, forms, pages, bio, contact, settings, logs</div>
+            <div class="t-line">All modules loaded OK</div>
+            <div class="t-line">Website: Honourable Vlogs — 4 pages detected</div>
+            <div class="t-line">WhatsApp endpoint: +918603081464 — ACTIVE</div>
+            <div class="t-line">Gmail endpoint: hasdan90@gmail.com — ACTIVE</div>
+            <div class="t-warn">Admin panel URL is hidden — not linked from public pages</div>
+            <div class="t-line">Awaiting admin actions...</div>
+          </div>
+          <div style="margin-top:12px">
+            <button class="ctrl-btn btn-red" onclick="clearLog()">🗑️ Clear Log</button>
+            <button class="ctrl-btn btn-green" onclick="addLogEntry('Manual log refresh triggered by admin.')">🔄 Refresh</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /panel-body -->
+</div><!-- /admin-panel -->
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+  // ──── PASSWORD ────
+  const ADMIN_PWD_KEY = 'sa_admin_pwd';
+  let storedPwd = localStorage.getItem(ADMIN_PWD_KEY) || 'sufiyan2026';
+  let failCount = 0;
+  let locked = false;
+
+  function doLogin() {
+    if (locked) { document.getElementById('login-err').textContent = '🔒 Too many attempts. Refresh page.'; return; }
+    const val = document.getElementById('pwd-input').value;
+    if (val === storedPwd) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'flex';
+      addLogEntry('Admin logged in successfully.');
+      addActivity('Login', 'Admin Auth', 'SUCCESS');
+    } else {
+      failCount++;
+      document.getElementById('login-err').textContent = '✕ Incorrect password.';
+      document.getElementById('login-attempts').textContent = `Attempt ${failCount}/5`;
+      document.getElementById('pwd-input').value = '';
+      addLogEntry(`Failed login attempt #${failCount}.`, 'warn');
+      if (failCount >= 5) {
+        locked = true;
+        document.getElementById('login-err').textContent = '🔒 Panel locked. Refresh to retry.';
+        addLogEntry('Panel locked due to too many failed attempts.', 'err');
+      }
+    }
+  }
+  document.getElementById('pwd-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+  function doLogout() {
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('pwd-input').value = '';
+    document.getElementById('login-err').textContent = '';
+  }
+
+  function changePwd() {
+    const np = document.getElementById('new_pwd').value.trim();
+    if (!np || np.length < 4) { showToast('✕ Password must be at least 4 characters.'); return; }
+    localStorage.setItem(ADMIN_PWD_KEY, np);
+    storedPwd = np;
+    document.getElementById('new_pwd').value = '';
+    showToast('✓ Password updated successfully!');
+    addLogEntry('Admin password changed.');
+  }
+
+  // ──── TABS ────
+  function switchTab(id, el) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    el.classList.add('active');
+    addLogEntry(`Navigated to: ${id}`);
+  }
+
+  // ──── TOAST ────
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ──── TERMINAL ────
+  function addLogEntry(msg, type = '') {
+    const term = document.getElementById('terminal-log');
+    const d = document.createElement('div');
+    const now = new Date().toLocaleTimeString();
+    d.className = type === 'warn' ? 't-warn' : type === 'err' ? 't-err' : 't-line';
+    d.textContent = `[${now}] ${msg}`;
+    term.appendChild(d);
+    term.scrollTop = term.scrollHeight;
+  }
+  function clearLog() {
+    document.getElementById('terminal-log').innerHTML = '';
+    addLogEntry('Log cleared by admin.');
+    showToast('✓ Log cleared.');
+  }
+
+  // ──── ACTIVITY ────
+  function addActivity(event, source, status) {
+    const tbody = document.getElementById('activity-log');
+    if (tbody.children[0] && tbody.children[0].colSpan) tbody.innerHTML = '';
+    const now = new Date().toLocaleTimeString();
+    const s = status === 'SUCCESS' ? 'badge-green' : status === 'PENDING' ? 'badge-yellow' : 'badge-red';
+    tbody.insertAdjacentHTML('afterbegin', `
+      <tr>
+        <td style="color:var(--muted);font-size:0.8rem">${now}</td>
+        <td>${event}</td>
+        <td>${source}</td>
+        <td><span class="badge ${s}">${status}</span></td>
+      </tr>
+    `);
+  }
+
+  // ──── FORMS ────
+  function markDone(btn) {
+    const row = btn.closest('tr');
+    row.querySelector('.badge-yellow').className = 'badge badge-green';
+    row.querySelector('.badge-green').textContent = 'Done';
+    btn.remove();
+    updatePending(-1);
+    showToast('✓ Marked as done.');
+    addLogEntry('Form submission marked as done.');
+    addActivity('Form Reviewed', 'Forms Panel', 'SUCCESS');
+  }
+  function deleteRow(btn) {
+    const row = btn.closest('tr');
+    const badge = row.querySelector('.badge');
+    if (badge && badge.classList.contains('badge-yellow')) updatePending(-1);
+    row.remove();
+    showToast('✕ Submission removed.');
+    addLogEntry('Form submission deleted.');
+  }
+  function updatePending(delta) {
+    const el = document.getElementById('pending-count');
+    const b = document.getElementById('forms-badge');
+    let v = parseInt(el.textContent) + delta;
+    if (v < 0) v = 0;
+    el.textContent = v;
+    b.textContent = v;
+  }
+
+  // ──── BIO ────
+  function saveBio() {
+    showToast('✓ Bio saved! (Apply changes to HTML manually)');
+    addLogEntry('Bio details saved by admin.');
+  }
+  function copyBio() {
+    const name = document.getElementById('bio_name').value;
+    const channel = document.getElementById('bio_channel').value;
+    const desc = document.getElementById('bio_desc').value;
+    navigator.clipboard.writeText(`${name} | ${channel}\n${desc}`).then(() => showToast('✓ Bio copied to clipboard!'));
+  }
+</script>
+</body>
+</html>
